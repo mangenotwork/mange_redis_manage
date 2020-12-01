@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="keywords" content="jquery,ui,easy,easyui,web">
+	<meta name="description" content="easyui help you build your web page easily!">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+	<script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+	<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+
+    <style type="text/css">
+    	a {cursor: pointer;}
+    	.return_pg {color:#000;text-decoration:none;}
+       	.return_pg span {font-size: 21px;}
+     	.reload_pg {margin-left: 2px;color:#000;}
+      	.reload_pg span {font-size: 21px;}
+    	hr {width: 100%;}
+    </style>
+
+</head>
+<body>
+
+	<a href="javascript:history.go(-1)" class="return_pg"><span> ⬅ </span></a>
+	<span style="font-size: 18px;margin-left: 10px;"> Redis Console</span>
+	<a onclick="location.reload()" class="reload_pg"><span> ↺ </span></a>
+	<br>
+	<hr>
+
+	
+	<div class="mainshow" style="background: #000;color: #fff;width: 100%;height: 780px;padding:16px;font-size: 14px;overflow-y:auto;">
+		<span id="cmder" style=""></span>
+		<input class="input" type="" name="" style="background: #000;color: #fff;border-style:none;outline: none;width: 80%;font-size: 14px;height: 30px;">
+
+	</div>
+
+<script type="text/javascript">
+var rid = parseInt({{.redisId}});
+var dbid = 0;
+var show = ' === 欢迎使用ymzy redis终端 v0.1 === <br>'
++'> help : 帮助<br>'
++'> db&lt;id&gt;: 切换db,等同select<br>'
++'> clear : 清空<br>'
++'> allcmd : 查看所有redis命令与终端命令<br>'
++'> man &lt;cmd&gt;: 查看命令的说明与使用<br>'
++'<br><span style="color:red;">DB'+dbid+' Cmd: > </span>'
+
+var input = '<input class="input" type="" name="" style="background: #000;color: #fff;border-style:none;outline: none;width: 80%;">'
+
+var r = /db\d+/g;
+var cmdid = 0;
+var cmdcursor = 0;
+
+$(document).ready(function(){
+	if (window.localStorage) {
+	    console.log('This browser supports localStorage');
+	} else {
+	    console.log('This browser does NOT support');
+	    alert("请使用高级的浏览器获得全部体验!");
+	} 
+
+	if(!isNaN(localStorage.getItem('cmdid'))){
+		cmdcursor = localStorage.getItem('cmdid');
+		cmdid = localStorage.getItem('cmdid');
+	}
+	
+　　$("#cmder").append(show); 
+}); 
+
+function update_show(show){
+	$(".input").val("");
+	$("#cmder").empty();
+	$("#cmder").append(show); 
+}
+
+
+function f5cmdid(cmddata){
+	cmdid = localStorage.getItem('cmdid');
+	if (isNaN(cmdid) || cmdid === null){
+		cmdid = 0
+	}
+
+	cmdid = parseInt(cmdid);
+	cmdid = cmdid+1;
+	cmdcursor = cmdid;
+	localStorage.setItem('cmdid',cmdid);
+	localStorage.setItem(cmdid,cmddata);
+}
+
+//todo  上下键 切换命令
+$(".input").keydown(function(e){
+
+	$('.mainshow').scrollTop( $('.mainshow').height());
+	var cmddata = $(".input").val();
+
+
+	if (e.keyCode === 13){
+		console.log("回车");
+		//切换db命令
+		var isdbcmd = cmddata.match(r);
+		if (isdbcmd != null || cmddata === "db"){
+			if (cmddata === "db"){
+				dbid = 0;
+			}else{
+				var a = isdbcmd[0].replace("db","");
+				dbid = parseInt(a);
+			}
+			show = show +'<br>切换db成功！<br><span style="color:red;">DB'+dbid+' Cmd: > </span>';
+			update_show(show);
+			f5cmdid(cmddata);
+			return
+		}
+
+		if (cmddata === "clear"){
+			location.reload();
+			f5cmdid(cmddata);
+			return
+		}
+
+		var url = "/api/redis/auth/console";
+		var param = {
+			"rid":rid,
+			"db_id":dbid,
+			"cmd":cmddata
+		}
+		sendAjax_post(url,param,function(data){
+		    console.log(data);
+		    show = show +'<br>' + data.data+'<br><span style="color:red;">DB'+dbid+' Cmd: > </span>';
+			update_show(show); 
+			f5cmdid(cmddata);
+			$('.mainshow').scrollTop( $('.mainshow').height());
+		});
+
+	}
+
+
+	//按上键
+	if (e.keyCode === 38){
+		console.log("上");
+		
+		if (cmdcursor > 1){
+			cmdcursor = cmdcursor-1;
+		}
+
+		console.log("cmdcursor = ", cmdcursor);
+		var cmd = localStorage.getItem((cmdcursor).toString());
+		console.log(cmd);
+		$(".input").val(cmd);
+	}
+
+	//按下键
+	if (e.keyCode === 40){
+		console.log("下")
+		
+		if (cmdcursor < cmdid){
+			cmdcursor = cmdcursor + 1;
+		}
+
+		console.log("cmdcursor = ", cmdcursor);
+		var cmd = localStorage.getItem((cmdcursor).toString());
+		console.log(cmd);
+		$(".input").val(cmd);
+	}
+
+	//tab键
+	if (e.keyCode === 17){
+		console.log("寻找匹配cmd， 补全cmd");
+	}
+
+
+});
+
+</script>
+
+</body>
+</html>
+

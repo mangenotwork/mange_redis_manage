@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="keywords" content="jquery,ui,easy,easyui,web">
+	<meta name="description" content="easyui help you build your web page easily!">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+	<script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+	<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+
+    <style type="text/css">
+    	a {cursor: pointer;}
+    	.return_pg {color:#000;text-decoration:none;}
+       	.return_pg span {font-size: 21px;}
+     	.reload_pg {margin-left: 2px;color:#000;}
+      	.reload_pg span {font-size: 21px;}
+    	hr {width: 100%;}
+    </style>
+
+</head>
+<body>
+	<a href="javascript:history.go(-1)" class="return_pg"><span> ⬅ </span></a>
+	<span style="font-size: 18px;margin-left: 10px;"> {{.title}}</span>
+	<a onclick="location.reload()" class="reload_pg"><span> ↺ </span></a>
+	<br>
+	<hr>
+
+	
+	<div>
+		{{range .data}}
+			<span style="font-size: 21px;">配置名 : {{.ConfigName}}</span><br>
+			<span style="font-size: 18px;">value : {{.ConfigValue}}</span><br>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'"><span>修改</span></a><br><br>
+			简单描述 : {{.ConfigDoc}}<br>
+			<br>
+			<hr>
+		{{end}}
+	</div>
+
+
+
+
+</body>
+</html>

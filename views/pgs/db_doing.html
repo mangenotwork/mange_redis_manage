@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="keywords" content="jquery,ui,easy,easyui,web">
+	<meta name="description" content="easyui help you build your web page easily!">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+	<script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+	<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+   
+
+    <style type="text/css">
+    	a {cursor: pointer;}
+    	.subimt_a {background: #000;margin-left: 2px;width: 180px;}
+    	.subimt_a span {font-size: 18px;color: #fff;}
+    	.return_pg {color:#000;text-decoration:none;}
+    	.return_pg span {font-size: 21px;}
+    	.reload_pg {margin-left: 2px;color:#000;}
+    	.reload_pg span {font-size: 21px;}
+    	.dblist {width: 100%;padding-bottom: 8px;margin-top: 8px;padding-left: 8px;}
+    	.dblist_name {width: 100%;margin-bottom: 5px;}
+    	.dblist_name span {font-size: 16px;margin-right: 4px;width: 100%;}
+    	.search {height: 21px;width:180px}
+    	.keyname {font-size: 21px;}
+    	.keyttl {font-size: 21px;margin-left: 50px;}
+    	.funcbnt1 {background: #000;}
+    	.funcbnt1 span {font-size: 18px;color: #fff;}
+    	.funcbnt {background: #000;}
+    	.funcbnt span {font-size: 18px;color: #fff;}
+    	.vul {width: 100%;border:1px solid #000;height: 480px;margin-top: 5px;}
+    	.vulpre {width: 98%;white-space: pre-wrap;word-wrap: break-word;margin-left: 1%;margin-top: 5px;height: 470px;overflow-y: auto;}
+    	.vultxt {height: 480px;width: 100%;resize: none;display:none;}
+    	.vulsubimt {width: 100%;margin-top: 5px;display:none;}
+    	.vulsubimt a {background: #000;margin-left: 2px;}
+    	.vulsubimt span {font-size: 18px;color: #fff;}
+    	.addkey_btn1 {background: #000;}
+    	.addkey_btn1 span {font-size: 18px;color: #fff;}
+    	.addkey_btn {background: #000;margin-left: 2px;}
+    	.addkey_btn span {font-size: 18px;color: #fff;}
+    	#string_value_input {height: 180px;width: 480px;resize: none;}
+    	#set_ttl_win {display: none;padding: 8px;}
+    	#set_ttl_win span {font-size: 21px;}
+    	.set_ttl_s_div {width: 100%; margin-bottom: 25px;}
+    	.set_ttl_d_div {width: 100%;}
+    	.set_ttl_input {margin-left: 50px;margin-top: 25px;}
+    	#rename_win {padding-top:  45px;padding-left: 25px;display: none;}
+    	#delete_win {display: none;padding:25px;}
+    	.addinputbtn {background: #000;margin-left: 2px;width: 50px;border-radius:5px;}
+    	.addinputbtn span {font-size: 18px;color: #fff;padding-left: 5px;padding-right: 5px;}
+    	.addinput {width:222px}
+    </style>
+
+</head>
+<body>
+	<a href="javascript:history.go(-1)" class="return_pg"><span> ⬅ </span></a>
+	<span style="font-size: 18px;margin-left: 10px;"> Redis DB 控制台</span>
+	<a onclick="location.reload()" class="reload_pg"><span> ↺ </span></a>
+	<br>
+	<hr>
+
+	<div class="easyui-layout" style="width:100%;height:780px;">
+		<!-- db列表 -->
+		<div data-options="region:'west',title:'DB列表',split:true" style="width:25%;">
+			{{ range .dblist}}
+				<div class="dblist">
+					<div class="dblist_name"><span class="opendb" db="{{.DBID}}"> DB{{.DBID}}({{.Keys}})</span></div>
+					<a class="easyui-linkbutton reload" db="{{.DBID}}" style="height: 21px;" data-options="iconCls:'icon-reload'">刷新</a>
+					<a class="easyui-linkbutton addkey" db="{{.DBID}}" style="height: 21px;" data-options="iconCls:'icon-add'">addkey</a>
+					<span style="font-size: 11px;">搜索：</span><input class="search" db="{{.DBID}}">
+				</div>
+				<div id="{{.DBID}}"></div>
+				<br>
+				<hr>
+			{{end}}
+
+			<!-- TODO: 暂时未使用的DB列表 -->
+		</div>
+
+		<!-- 操作面板 -->
+		<div id="db_center" data-options="region:'center',title:'操作面板'" style="width: 70%;padding:28px;">
+
+			<!-- key 信息，key操作面板 -->
+			<div id="keyinfo" style="display:none;">
+				<div style="width: 100%;">
+						<span class="keyname">KeyName: <span id="keyname" style="color: red;">aaa</span></span>
+						<span class="keyttl">TTL:<span id="ttl"></span> </span>
+						<span class="keyttl">类型: <span id="key_type"></span></span>
+						<span class="keyttl">Size: <span id="key_size"></span></span>
+						<span class="keyttl">DB: <span id="key_db"></span></span>
+				</div>
+				<hr>
+				<div>
+					<div id="stringkey_btn" style="width: 100%;display: none;">
+						<a href="#" class="easyui-linkbutton funcbnt1 rename_key"><span>重命名Key</span></a>
+				        <a href="#" class="easyui-linkbutton funcbnt delete_key" data-options="iconCls:'icon-cancel'"><span>删除key</span></a>
+				        <a id="refresh_key" href="#" class="easyui-linkbutton funcbnt" data-options="iconCls:'icon-reload'"><span>刷新key</span></a>
+				        <a id="copy_key" href="#" class="easyui-linkbutton funcbnt"><span>复制值</span></a>
+				        <a href="#" class="easyui-linkbutton funcbnt set_ttl"><span>重置TTL</span></a>
+				        <a id="update" href="#" class="easyui-linkbutton funcbnt" data-options="iconCls:'icon-edit'"><span>更新value</span></a>
+					</div>
+					<div id="key_btn" style="width: 100%;display: none;margin-bottom: 15px;">
+						<a href="#" class="easyui-linkbutton funcbnt1 rename_key"><span>重命名Key</span></a>
+				        <a href="#" class="easyui-linkbutton funcbnt delete_key" data-options="iconCls:'icon-cancel'"><span>删除key</span></a>
+				        <a id="refresh_key" href="#" class="easyui-linkbutton funcbnt" data-options="iconCls:'icon-reload'"><span>刷新key</span></a>
+				        <a href="#" class="easyui-linkbutton funcbnt set_ttl"><span>重置TTL</span></a>
+					</div>
+				</div>
+				<div id="txtdata" style="display:none;">
+					<div class="vul">
+							<pre id="value_code" class="vulpre"></pre>
+							<textarea id="value_text" class="vultxt"></textarea>
+					</div>
+					<div id="submit" class="vulsubimt" style="">
+						<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"><span>保存修改</span></a>
+						<a id="notupdate" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-back'"><span>取消修改</span></a>
+					</div>
+				</div>
+				<table id="listdata" style="display: none;width:100%;height:480px"></table>
+			</div>
+
+			<!-- 新增key 面板 -->
+			<div id="addkey_div">
+				<div id="addkey_dbinfo" style="width: 100%;">
+					<span style="font-size: 21px;">DBID: <span id="addkey_dbid" style="color: red;">{{.initdb.DBID}}</span></span>
+					<span style="font-size: 21px;margin-left: 50px">Yey总数: {{.initdb.Keys}}</span>
+					<span style="font-size: 21px;margin-left: 50px">平均TTL: {{.initdb.AvgTTL}}</span>
+					<span style="font-size: 21px;margin-left: 50px">Expires: {{.initdb.Expires}}</span>
+				</div>
+				<hr>
+				<div style="width: 100%;">
+					<a onclick="switchadddiv('string')" class="easyui-linkbutton addkey_btn1" data-options="iconCls:'icon-add'"><span>新增String</span></a>
+			        <a onclick="switchadddiv('hash')" class="easyui-linkbutton addkey_btn" data-options="iconCls:'icon-add'"><span>新增Hash</span></a>
+			        <a onclick="switchadddiv('list')" class="easyui-linkbutton addkey_btn" data-options="iconCls:'icon-add'"><span>新增List</span></a>
+			        <a onclick="switchadddiv('set')" class="easyui-linkbutton addkey_btn" data-options="iconCls:'icon-add'"><span>新增Set</span></a>
+			        <a onclick="switchadddiv('zset')" class="easyui-linkbutton addkey_btn" data-options="iconCls:'icon-add'"><span>新增Zset</span></a>
+			        <a onclick="switchadddiv('channel')" class="easyui-linkbutton addkey_btn" data-options="iconCls:'icon-add'"><span>发布频道</span></a>
+			        <a onclick="switchadddiv('import')" class="easyui-linkbutton addkey_btn" data-options="iconCls:'icon-add'"><span>导入数据</span></a>
+				</div>
+				<hr>
+				<div id="add_string_div" style="width: 100%;">
+					<span style="font-size: 24px;"> >新增String </span>
+					<table style="margin-top: 25px;">
+						<tr style="height: 50px;">
+							<td style="width: 180px;">Key Name</td>
+							<td><input id="string_value_key" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>TTL</td>
+							<td><input id="string_value_ttl" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>Value</td>
+							<td><textarea id="string_value_input"></textarea></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td></td>
+							<td>
+								<a onclick="string_subimt()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'" >
+									<span style="font-size: 18px;color: #fff;">提交</span>
+								</a>
+								<a onclick="string_reset()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-back'" >
+									<span style="font-size: 18px;color: #fff;">重置</span>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="add_hash_div" style="width: 100%;display:none;">
+					<span style="font-size: 24px;"> >新增Hash</span>
+					<table style="margin-top: 25px;">
+						<tr style="height: 50px;">
+							<td style="width: 180px;">Key Name</td>
+							<td><input id="hash_value_key" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>TTL</td>
+							<td><input id="hash_value_ttl" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>Value</td>
+							<td id="add_hash_list">
+							
+							</td>
+						</tr>
+						<tr style="height: 100px;">
+							<td></td>
+							<td>
+								<a onclick="hash_subimt()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'" >
+									<span style="font-size: 18px;color: #fff;">提交</span>
+								</a>
+								<a onclick="hash_reset()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-back'" >
+									<span style="font-size: 18px;color: #fff;">重置</span>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="add_list_div" style="width: 100%;display:none;">
+					<span style="font-size: 24px;"> >新增List</span>
+					<table style="margin-top: 25px;">
+						<tr style="height: 50px;">
+							<td style="width: 180px;">Key Name</td>
+							<td><input id="list_value_key" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>TTL</td>
+							<td><input id="list_value_ttl" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>Value</td>
+							<td id="add_list_list">
+							</td>
+						</tr>
+						<tr style="height: 100px;">
+							<td></td>
+							<td>
+								<a onclick="list_subimt()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'">
+									<span style="font-size: 18px;color: #fff;">提交</span>
+								</a>
+								<a onclick="list_reset()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-back'" >
+									<span style="font-size: 18px;color: #fff;">重置</span>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="add_set_div" style="width: 100%;display:none;">
+					<span style="font-size: 24px;"> >新增SET</span>
+					<table style="margin-top: 25px;">
+						<tr style="height: 50px;">
+							<td style="width: 180px;">Key Name</td>
+							<td><input id="set_value_key" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>TTL</td>
+							<td><input id="set_value_ttl" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>Value</td>
+							<td id="add_set_list">
+							</td>
+						</tr>
+						<tr style="height: 100px;">
+							<td></td>
+							<td>
+								<a onclick="set_subimt()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'" >
+									<span style="font-size: 18px;color: #fff;">提交</span>
+								</a>
+								<a onclick="set_reset()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-back'" >
+									<span style="font-size: 18px;color: #fff;">重置</span>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="add_zset_div" style="width: 100%;display:none;">
+					<span style="font-size: 24px;"> >新增ZSET</span>
+					<table style="margin-top: 25px;">
+						<tr style="height: 50px;">
+							<td style="width: 180px;">Key Name</td>
+							<td><input id="zset_value_key"  class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>TTL</td>
+							<td><input id="zset_value_ttl" class="easyui-textbox" type="text" style="width:480px"></td>
+						</tr>
+						<tr style="height: 50px;">
+							<td>Value</td>
+							<td id="add_zset_list">
+							
+							</td>
+						</tr>
+						<tr style="height: 100px;">
+							<td></td>
+							<td>
+								<a onclick="zset_subimt()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'">
+									<span style="font-size: 18px;color: #fff;">提交</span>
+								</a>
+								<a onclick="zset_reset()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-back'">
+									<span style="font-size: 18px;color: #fff;">重置</span>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="add_channel_div" style="width: 100%;display:none;">
+					<span style="font-size: 24px;"> >发布频道</span>
+					
+				</div>
+				<div id="add_import_div" style="width: 100%;display:none;">
+					<span style="font-size: 24px;"> >导入数据</span>
+					
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+
+<div id="set_ttl_win">
+	<div class="set_ttl_s_div">
+		<span> >按秒设置</span><br>
+		<div class="set_ttl_input"><input id="ttl_ss" class="easyui-numberspinner" style="width:180px;" data-options=""></div>
+		<br>
+		<a onclick="setttl(0)" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'" style="margin-left: 50px;"><span>提交</span></a>
+	</div>
+	<hr>
+	<div class="set_ttl_d_div">
+		<span> >按日期设置</span><br>
+		<div class="set_ttl_input"><input id="ttl_dt" type="text" name="birthday"></div>
+		<br>
+		<a onclick="setttl(1)" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'" style="margin-left: 50px;"><span>提交</span></a>
+	</div>
+</div>
+
+<div id="rename_win">
+	 <input id="key_new_name" class="easyui-textbox" style="width:300px"><br><br>
+	 <a onclick="renamekey()" class="easyui-linkbutton subimt_a" data-options="iconCls:'icon-save'"><span>提交</span></a>
+</div>
+
+<div id="delete_win">
+	<span style="color: red;font-size: 21px;">将执行删除key的操作，请再次确认！</span><br><br>
+	<a id="btn" onclick="delkey()" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="color: #000;width: 120px;">确定</a>
+	<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-back'" style="color: #000;width: 120px;margin-left: 60px;">返回</a>
+</div>
+
+<div id="edit" style="padding:10px;">
+</div>
+
+<script type="text/javascript">
+var rid = {{.rid}};
+</script>
+
+<script type="text/javascript" src="/static/js/db_doing.js?v=0.10"></script>
+
+
+</body>
+</html>

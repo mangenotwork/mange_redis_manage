@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="keywords" content="jquery,ui,easy,easyui,web">
+	<meta name="description" content="easyui help you build your web page easily!">
+	<title>{{.title}}</title>
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+	<script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+	<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+
+    <style type="text/css">
+    	a {cursor: pointer;}
+
+    	.wellcom_div {
+    		width:600px;
+    		height:400px;
+    		padding-left: 15px;
+    	}
+
+    </style>
+
+</head>
+<body class="easyui-layout" style="overflow: hidden;">
+
+  {{if eq .is_show 1}}
+	<div id="wellcom" class="easyui-window wellcom_div" title="My Window"
+	    data-options="modal:true,collapsible:false,title: 'Ymzy Redis Tool 欢迎页',minimizable:false,maximizable:false,closable:false">
+	    <h3>{{.welcome}}</h3>
+      <h4>请登录获得及佳体验，<br>如果是没有子账号请联系管理员添加你的账号，<br>如果你是管理员请定期更新你的密码。</h4>
+      <h3 ><a onclick="userlogin()" style="color: red;">前往登录>>></a>
+      <br>
+      <h4>感谢 :<a href="{{.thank_url}}">{{.thank}}</a></h4>
+      <h4>作者 :{{.author}}</h4>
+      <h4><a href="/help">帮助文档</a><h4>
+      <h4><a href="https://git.zituo.net/liman/ymzy-redis-tool">项目地址</a><h4>
+
+	</div>
+  {{end}}
+
+	<div data-options="region:'north'" style="height:72px;"><!--height:108px; -->
+		
+		<!-- <div style="text-align: center;"> 
+			<h2 style="margin-block-start: 0.2em;margin-block-end: 0em;">ManGe Redis Manager</h2>
+		</div> -->
+
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#file'">文件(Alt+F)</a>
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#editor'">设置(Alt+E)</a>
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#editor'">导航(Alt+W)</a>
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#editor'">查找(Alt+S)</a>
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#editor'">使用教程(Alt+X)</a>
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#editor'">社区(Alt+A)</a>
+		<a href="javascript:void(0)" id="mb" class="easyui-menubutton"
+		    data-options="menu:'#editor'">帮助</a>
+
+		<!-- file menu -->
+		<div id="file" class="easyui-menu" style="width:120px;">
+		    <div>打开连接</div>
+		    <div>新建连接</div>
+		    <div>导入连接</div>
+		    <div>导出连接</div>
+		    <div>
+				<span>备份</span>
+				<div style="width:150px;">
+					<div>命令备份</div>
+					<div>备份到本地</div>
+					<div>逻辑备份到本地</div>
+				</div>
+		    </div>
+		    <div data-options="iconCls:'icon-save'">保存所有连接</div>
+		    <div class="menu-sep"></div>
+		    <div>退出</div>
+		</div>
+
+		<!-- editor menu -->
+		<div id="editor" class="easyui-menu" style="width:120px;">
+		    <div>连接设置</div>
+		    <div>用户管理</div>
+		    <div>修改密码</div>
+		    <div>-</div>
+		    <div>
+				<span>-</span>
+				<div style="width:150px;">
+					<div>-</div>
+					<div>-</div>
+					<div>-</div>
+				</div>
+		    </div>
+		    <div data-options="iconCls:'icon-save'">-</div>
+		    <div class="menu-sep"></div>
+		    <div>-</div>
+		</div>
+
+		<hr style="margin-block-start: 0.1em;margin-block-end: 0.2em;">
+		<a id="btn" onclick="newconn()" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="margin-left: 5px;">新建连接</a>
+		<a id="btn" onclick="searchConn()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索链接</a>
+		
+		<a id="btn" onclick="openManager()" class="easyui-linkbutton" data-options=""><embed src="/static/svg/user_manage_btn.svg" type="image/svg+xml" style="width: 15px;height: 15px;" /> 账号管理</a>
+		<a id="btn" onclick="openTable()" class="easyui-linkbutton" data-options="">表格</a>
+		{{if eq .isLogin 0}}
+			<a id="btn" onclick="userlogin()" class="easyui-linkbutton" data-options="">登录</a>
+		{{else}}
+			<a href="#" style="float: right;margin-right: 25px;">当前用户:{{.username}}</a>
+		{{end}}
+
+	</div>
+
+
+    <!--底部记录-->
+   <!--  <div data-options="region:'south',title:'操作日志',split:true" style="height:100px;"></div> -->
+
+    <!--帮助文档-->
+    <!-- <div data-options="region:'east',title:'帮助文档',split:true" style="width:200px;"></div> -->
+
+    <!--连接列表-->
+    <div data-options="region:'west',title:'Redis连接列表',split:true,collapsible:false" style="width:300px;">
+
+    	{{if eq .isLogin 0}}
+    		<h3 style="padding: 35px;">请登录</h3>
+
+    	{{else}}
+    		<div id="connlist"></div>
+    	{{end}}
+    </div>
+
+    <!--内容-->
+    <div data-options="region:'center', split:true" id="tt" class="easyui-tabs" style="width:100%;height:100%;padding:5px;background:#eee;display:inline-block;word-break:keep-all;white-space:nowrap;">
+    	
+    	<!-- <div id="tt" class="easyui-tabs" > -->
+		    <div title="init" data-options="split:true" style="padding:10px;display:none;">
+				<h2>欢迎使用Ymzy Redis 工具</h2>
+				 <h4>感谢 :<a href="{{.thank_url}}">{{.thank}}</a></h4>
+			      <h4>作者 :{{.author}}</h4>
+			      <h4><a href="/help">帮助文档</a><h4>
+			      <h4><a href="https://git.zituo.net/liman/ymzy-redis-tool">项目地址</a><h4>
+				<table id="dg"></table>
+		    </div>
+
+		<!-- </div> -->
+
+    </div>
+
+
+<div id="win" style="display: none;">
+
+	<table>
+		<tr style="height: 35px;">
+			<td style="width: 150px;"><b>> Redis连接</b></td>
+			<td style="width: 300px;"></td>
+			<td></td>
+		</tr>
+    <tr>
+			<td style="text-align:right;">连接名 :</td>
+			<td><input id="conn_name" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">Host :</td>
+			<td><input id="redis_host" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">Port :</td>
+			<td><input id="redis_port" class="easyui-textbox"  style="width:300px"></td>
+			<td>(默认6397)</td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">Password :</td>
+			<td><input id="redis_password" type="password" class="easyui-textbox"  style="width:300px"></td>
+			<td>(没有密码可忽略)</td>
+		</tr>
+
+		<tr style="height: 35px;">
+			<td></td><td></td><td></td>
+		</tr>
+
+		<tr style="height: 35px;">
+			<td><b>> SSH (SSH隧道连接)</b></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">SSH Host+Port :</td>
+			<td><input id="ssh_host" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">SSH User :</td>
+			<td><input id="ssh_user" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td style="text-align:right;">SSH Password :</td>
+			<td><input id="ssh_password" type="password" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr style="height: 120px;">
+			<td></td>
+			<td>
+				<a id="btn" onclick="testConn();" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" style="width:300px">测试连接</a>
+				<br>
+				<a id="btn" onclick="newConn()" class="easyui-linkbutton" style="width:300px;margin-top: 15px;">连接</a>
+			</td>
+			<td></td>
+		</tr>
+
+	</table>
+
+</div>
+
+
+
+<div id="userlogin" style="display: none;">
+
+	<table style="margin-top: 50px;">
+
+		<tr style="height: 50px;">
+			<td style="width: 150px;text-align:right;">账号 :</td>
+			<td style="width: 300px;"><input id="user" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr style="height: 50px;">
+			<td style="text-align:right;">密码 :</td>
+			<td><input id="password" type="password" class="easyui-textbox"  style="width:300px"></td>
+			<td></td>
+		</tr>
+		<tr style="height: 50px;">
+			<td></td>
+			<td>
+				<a id="btn" onclick="login()" class="easyui-linkbutton" style="width:300px;margin-top: 15px;">确认</a>
+			</td>
+			<td></td>
+		</tr>
+
+	</table>
+
+</div>
+
+
+
+
+
+</body>
+
+<script type="text/javascript">
+
+var isLogin = {{.isLogin}};
+
+function getConnList(){
+    var url = "/api/redis/auth/conn/list";
+    sendAjax_get(url,function(data){
+    	console.log(data);	
+    	console.log(data.data.list)
+    	var connlist = data.data.list;
+    	for (var i = 0; i < connlist.length; i++) {
+    		console.log(connlist[i])
+    		$("#connlist").append('<a onclick="echarts(\''+connlist[i].redis_conn+'\','+connlist[i].conn_id+')"><div style="padding:8px;"><span style="padding-left: 10px;font-size: 21px;">'+connlist[i].conn_name+'</span>\
+    			<br><span>Redis主机:'+connlist[i].redis_conn+'</span><br><span>创建时间:'+connlist[i].create+'</span></a></div><hr>')
+    	}
+    });
+}
+
+
+//sendAjax_get_test(url);
+
+$(document).ready(function () {
+	if (isLogin === 1){
+		getConnList();
+	}
+	
+	$.cookie('welcome','yes',{ expires: 7, path: '/'});
+});
+
+
+function newconn(){
+	$('#win').window({
+		width:600,
+		height:530,
+		modal:true,
+		collapsible:false,
+		title: "新建连接",
+		minimizable:false,
+		maximizable:false
+	});
+}
+
+function userlogin(){
+	$('#userlogin').window({
+		width:600,
+		height:360,
+		modal:true,
+		collapsible:false,
+		title: "登录",
+		minimizable:false,
+		maximizable:false
+	});
+}
+
+// 添加一个新的标签页面板（tab panel）
+function openManager(){
+	$('#tt').tabs('add',{
+		    title:'账号管理',
+		    content:'账号管理',
+		    closable:true,
+		    tools:[{
+				iconCls:'icon-mini-refresh',
+				handler:function(){
+					alert('#');
+				}
+		    }]
+		});
+}
+
+function searchConn(){
+		$('#tt').tabs('add',{
+		    title:'搜索链接',
+		    content:'搜索链接',
+		    closable:true,
+		    iconCls:'icon-search',
+		    tools:[{
+				iconCls:'icon-mini-refresh',
+				handler:function(){
+					alert('#');
+				}
+		    }]
+		});
+}
+
+function echarts(name,id){
+		$('#tt').tabs('add',{
+			id:name,
+		    title:name,
+		    content:'<iframe scrolling="auto" name="'+name+'" frameborder="0"  src="echarts/memory/'+id+'" style="width:100%;height:99%;"></iframe>',
+		    closable:true,
+		    fit:true
+		});
+}
+
+
+function openTable(){
+		$('#dg').datagrid({
+		    //url:'datagrid_data.json',
+		    columns:[[
+				{field:'code',title:'Code',width:100},
+				{field:'name',title:'Name',width:100},
+				{field:'price',title:'Price',width:100,align:'right'}
+		    ]],
+		    data: [
+					{code:'value11', name:'value12', price:'value12'},
+					{code:'value21', name:'value22', price:'value12'}
+				],
+			fitColumns: true,
+			pagination: true,
+			rownumbers: true,
+			singleSelect: true
+		});
+}
+
+function SetConnData(){
+  	var conn_name = $("#conn_name").val();
+  	var redis_host = $("#redis_host").val();
+  	var redis_port = $("#redis_port").val();
+  	var redis_password = $("#redis_password").val();
+  	var ssh_host = $("#ssh_host").val();
+  	var ssh_user = $("#ssh_user").val();
+  	var ssh_password = $("#ssh_password").val();
+  	var param = {
+	    "conn_name":conn_name,
+	    "redis_host":redis_host,
+		  "redis_port":parseInt(redis_port),
+		  "redis_password":redis_password,
+		  "ssh_host":ssh_host,
+		  "ssh_user":ssh_user,
+		  "ssh_password":ssh_password
+	};
+  	console.log(param);
+ 	return param
+}
+
+function testConn(){
+	var url = "/api/redis/allow/conn/test";
+	var param = SetConnData()
+	PostTip(url,param);
+ }
+
+function newConn(){
+	var url = "/api/redis/auth/conn/new";
+	var param =  SetConnData()
+	sendAjax_post(url,param,function(data){
+	    console.log(data);
+	    if (data.code == 0){
+	      alert(data.data);
+	      location.reload();
+	    }else{
+	      alert(data.mag);
+	    }
+	})
+}
+
+function login(){
+ 	var url = "/api/user/v1/login"
+ 	var param = {
+ 		"user" : $('#user').val(),
+ 		"password" : $("#password").val()
+ 	}
+ 	//PostTip(url,param);
+ 	sendAjax_post(url,param,function(data){
+ 		if (data.code == 0){
+ 			location.reload();
+ 		}else{
+	      alert(data.mag);
+	    }
+ 	});
+}
+
+
+
+</script>
+
+</html>

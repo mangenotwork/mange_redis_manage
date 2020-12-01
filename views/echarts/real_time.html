@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+    <script src="/static/echarts-4.8.0/dist/echarts.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+    <script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+
+    <style type="text/css">
+      a {cursor: pointer;}
+      .return_pg {color:#000;text-decoration:none;}
+      .return_pg span {font-size: 21px;}
+      .reload_pg {margin-left: 2px;color:#000;}
+      .reload_pg span {font-size: 21px;}
+
+    </style>
+
+</head>
+<body style="background: #FCFCFC;">
+
+  <a href="javascript:history.go(-1)" class="return_pg"><span> ⬅ </span></a>
+  <span style="font-size: 18px;margin-left: 10px;"> Redis 实时监控</span>
+  <a onclick="location.reload()" class="reload_pg"><span> ↺ </span></a>
+  <br>
+  <hr>
+
+<!-- 	<span style="font-size: 24px;">Redis 实时监控</span><br>
+	<a href="javascript:history.go(-1)" style="color:#000;"><span style="font-size: 21px;">返回</span></a>
+	<a onclick="location.reload()"  style="margin-left: 35px;color:#000;"><span style="font-size: 21px;">刷新</span></a><hr>
+ -->
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff; border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时CPU</span>
+		<div id="cpu" style="width: 96%;height: 276px;"></div>
+		<!-- <div style="text-align: center;margin-top: -50px;"><span style="font-size: 21px;">实时CPU</span></div> -->
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时Memory</span>
+		<div id="memory" style="width: 96%;height: 276px;"></div>
+		<!-- <div style="text-align: center;margin-top: -50px;"><span style="font-size: 21px;">实时Memory</span></div> -->
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时QPS</span>
+		<div id="qps" style="width: 96%;height: 276px;"></div>
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时连接数</span>
+		<div id="conn" style="width: 96%;height: 276px;"></div>
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时key数量</span>
+		<div id="keys" style="width: 96%;height: 276px;"></div>
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时输入流量</span>
+		<div id="kbps_input" style="width: 96%;height: 276px;"></div>
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时输出流量</span>
+		<div id="kbps_output" style="width: 96%;height: 276px;"></div>
+	</div>
+
+	<div style="width: 46%;margin-left: 2%;padding: 25px;float: left;border-radius: 30px;background: #fff;border:1px solid darkslategray;margin-top: 16px;">
+		<span style="font-size: 21px;">实时命中</span>
+		<div id="hitrate" style="width: 96%;height: 276px;"></div>
+	</div>
+
+
+</body>
+
+<script type="text/javascript">
+
+function SetOption(xdata,series_data,name,dw){
+	return {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            lineStyle: {
+                color: '#62aef6'
+            },
+        },
+
+    },
+    grid: {
+        top: '8%',
+        left: '10%',
+        right: '1%',
+        bottom: '8%'
+    },
+    xAxis: [{
+        type: 'category',
+        boundaryGap: false,
+        axisLine: {
+            show: false
+        },
+        axisLabel: {
+            textStyle: {
+                margin: 15,
+            },
+        },
+        axisTick: {
+            show: false,
+        },
+        data: xdata,
+    }],
+    yAxis: [{
+        type: 'value',
+        splitLine: {
+            show: true
+        },
+        axisLine: {
+            show: false,
+        },
+        axisTick: {
+            show: false,
+        },
+        axisLabel: {
+          formatter: '{value}'+dw
+        },
+    }],
+    series: [{
+        name: name,
+        type: 'line',
+        smooth: true, //是否平滑曲线显示
+        symbol:'none',  // 默认是空心圆（中间是白色的），改成实心圆
+        showAllSymbol: false,
+        symbolSize: 8,
+        lineStyle: {
+            normal: {
+                color: "#62aef6", // 线条颜色
+            },
+            borderColor: '#62aef6'
+        },
+        label: {
+            show: false,
+            position: 'top',
+            textStyle: {
+                color: '#fff',
+            }
+        },
+        itemStyle: {
+            normal: {
+                color: "rgba(255,255,255,1)",
+            }
+        },
+        tooltip: {
+            show:true,
+            backgroundColor:'white'
+        },
+        areaStyle: { //区域填充样式
+            normal: {
+                //线性渐变，前4个参数分别是x0,y0,x2,y2(范围0~1);相当于图形包围盒中的百分比。如果最后一个参数是‘true’，则该四个值是绝对像素位置。
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: 'rgba(0,150,239,0.3)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgba(0,253,252,0)'
+                    }
+                ], false),
+                shadowColor: 'rgba(53,142,215, 0.9)', //阴影颜色
+                shadowBlur: 20 //shadowBlur设图形阴影的模糊大小。配合shadowColor,shadowOffsetX/Y, 设置图形的阴影效果。
+            }
+        },
+        data: series_data
+    }]
+};
+}
+
+
+var option_x = {{.option_x}};
+
+var cpu_Chart = echarts.init(document.getElementById('cpu'));
+var cpu_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var cpu_option_series_data = {{.cpu_option_series_data}};
+var cpu_option_name = {{.cpu_option_name}};
+cpu_Chart.setOption(SetOption(option_x,cpu_option_series_data,"cpu",""));
+
+var memory_Chart = echarts.init(document.getElementById('memory'));
+var memory_option_series_data = {{.memory_option_series_data}};
+var memory_option_name ={{.memory_option_name}};
+var memory_dw = {{.memory_dw}}
+
+memory_Chart.setOption(SetOption(option_x,memory_option_series_data,"memory",memory_dw));
+
+var qps_Chart = echarts.init(document.getElementById('qps'));
+var qps_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var qps_option_series_data = {{.qps_option_series_data}};
+var qps_option_name ={{.qps_option_name}};
+var qps_dw = {{.qps_dw}};
+qps_Chart.setOption(SetOption(option_x,qps_option_series_data,"qps",qps_dw));
+
+var conn_Chart = echarts.init(document.getElementById('conn'));
+var conn_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var conn_option_series_data = {{.conn_option_series_data}};
+var conn_option_name ={{.conn_option_name}};
+conn_Chart.setOption(SetOption(option_x,conn_option_series_data,"conn",""));
+
+var keys_Chart = echarts.init(document.getElementById('keys'));
+var keys_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var keys_option_series_data = {{.keys_option_series_data}};
+var keys_option_name ={{.keys_option_name}};
+keys_Chart.setOption(SetOption(option_x,keys_option_series_data,"keys",""));
+
+var kbps_input_Chart = echarts.init(document.getElementById('kbps_input'));
+var kbps_input_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var kbps_input_option_series_data = {{.kbps_input_option_series_data}};
+var kbps_input_option_name ={{.kbps_input_option_name}};
+kbps_input_Chart.setOption(SetOption(option_x,kbps_input_option_series_data,kbps_input_option_name,"kb"));
+
+var kbps_output_Chart = echarts.init(document.getElementById('kbps_output'));
+var kbps_output_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var kbps_output_option_series_data = {{.kbps_output_option_series_data}};
+var kbps_output_option_name ={{.kbps_output_option_name}};
+kbps_output_Chart.setOption(SetOption(option_x,kbps_output_option_series_data,kbps_output_option_name,"kb"));
+
+var hitrate_Chart = echarts.init(document.getElementById('hitrate'));
+var hitrate_option_x = ['2014', '2015', '2016', '2017', '2018', '2019']
+var hitrate_option_series_data = {{.hitrate_option_series_data}};
+var hitrate_option_name ={{.hitrate_option_name}};
+hitrate_Chart.setOption(SetOption(option_x,hitrate_option_series_data,"hitrate",""));
+
+
+var RealTimeID = {{.real_time_id}};
+//alert(RealTimeID)
+
+
+function addData(){
+	var url = "/api/redis/auth/realtime/{{.rid}}?rtid={{.real_time_id}}";
+    sendAjax_get(url,function(data){
+
+    	console.log(data.data)
+
+      if (option_x.length >= 20){
+        option_x.shift();
+      }
+       
+      if (cpu_option_series_data.length >= 20){
+        cpu_option_series_data.shift();
+      }
+
+      if (memory_option_series_data.length >= 20){
+         memory_option_series_data.shift();
+      }
+      
+      if (qps_option_series_data.length >= 20){
+        qps_option_series_data.shift();
+      }
+
+      if (conn_option_series_data.length >= 20){
+        conn_option_series_data.shift();
+      }
+       
+      if (keys_option_series_data.length >= 20){
+        keys_option_series_data.shift();
+      }  
+        
+      if (kbps_input_option_series_data >= 20){
+        kbps_input_option_series_data.shift();
+      }  
+      
+      if (kbps_output_option_series_data >= 20){
+        kbps_output_option_series_data.shift();
+      }  
+      
+
+	    option_x = option_x.concat(data.data.time_data);
+	    cpu_option_series_data = cpu_option_series_data.concat(data.data.cpu_data);
+	    memory_option_series_data = memory_option_series_data.concat(data.data.memory_data);
+	    memory_dw = data.data.memory_dw;
+	    qps_option_series_data = qps_option_series_data.concat(data.data.qps_data);
+	    conn_option_series_data = conn_option_series_data.concat(data.data.conn_data);
+	    keys_option_series_data = keys_option_series_data.concat(data.data.keys_data);
+	    kbps_input_option_series_data = kbps_input_option_series_data.concat(data.data.kbps_input_data);
+	    kbps_output_option_series_data = kbps_output_option_series_data.concat(data.data.kbps_output_data);
+
+
+    });
+}
+
+setInterval(function () {
+    addData();
+    //cpu
+    cpu_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'cpu',
+          data: cpu_option_series_data
+        }]
+    });
+
+    //memory
+    memory_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'memory',
+          data: memory_option_series_data
+        }]
+    });
+
+    //qps
+    qps_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'qps',
+          data: qps_option_series_data
+        }]
+    });
+
+    //conn
+    conn_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'conn',
+          data: conn_option_series_data
+        }]
+    });
+
+    //keys
+    keys_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'keys',
+          data: keys_option_series_data
+        }]
+    });
+
+    //kbps_input
+    kbps_input_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'kbps',
+          data: kbps_input_option_series_data
+        }]
+    });
+
+    //kbps_output
+    kbps_output_Chart.setOption({
+      xAxis: {
+          data: option_x
+        },
+      series: [{
+          name:'kbps',
+          data: kbps_output_option_series_data
+        }]
+    });
+
+}, 2000);
+
+
+</script>
+
+
+</html>

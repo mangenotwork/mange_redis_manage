@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+    <script src="/static/echarts-4.8.0/dist/echarts.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+    <script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+
+<style type="text/css">
+    a {cursor: pointer;}
+
+    .yy {
+        border:#909090 1px solid;
+        background:#fff;
+        color:#333;
+        filter:progid:DXImageTransform.Microsoft.Shadow(color=#909090,direction=120,strength=4);
+        -moz-box-shadow: 2px 2px 10px #909090;
+        -webkit-box-shadow: 2px 2px 10px #909090;
+        box-shadow:2px 2px 10px #909090;
+    }
+
+    .jh_div {
+        widows:100%;
+        margin-top: -25px;
+    }
+
+    .jh_btn {
+        margin-left: 25px;
+        background: #000;
+    }
+
+    .jh_btn span {
+        font-size: 21px;
+        color: #fff;
+    }
+
+    .r_servers_div {
+        widows:100%;
+        margin-top: 25px;
+    }
+
+    .r_servers_span {
+        margin-left: 35px;
+        font-size: 24px;
+    }
+
+    .r_servers_echarts {
+        width: 100%;
+        height:500px;
+        margin-top: 25px;
+    }
+
+    .r_servers_echarts_div {
+        width: 58%;
+        height:540px;
+        margin-top: 25px;
+        float: left;
+        background: #fff;
+        padding: 2%;
+    }
+
+    .r_servers_echarts_div a {
+        margin-left: 10px;
+    }
+
+    .r_servers_table_div {
+        width: 38%;
+        height:540px;
+        margin-top: 25px;
+        float: left;
+        margin-left: 2%;
+        background: #fff;
+        padding: 1%;
+    }
+
+    .r_db_info_div {
+        width: 100%;
+        margin-top: 25px;
+        float: left;
+    }
+</style>
+
+</head>
+<body style="background: #FCFCFC;">
+
+<div style="padding: 35px;">
+
+    <div class="jh_div">
+        <span style="font-size: 18px;">>交互</span><br><br>
+        <a id="btn" href="/operation/{{.rid}}" class="easyui-linkbutton jh_btn"><span>DB控制台</span></a>
+        <a id="btn" href="/realtime/{{.rid}}" class="easyui-linkbutton jh_btn"><span>Redis实时监控</span></a>
+        <a id="btn" href="/serverinfo/{{.rid}}" class="easyui-linkbutton jh_btn"><span>Redis服务详细信息</span></a>
+        <a id="btn" href="/serverconfig/{{.rid}}" class="easyui-linkbutton jh_btn"><span>Redis服务配置</span></a>
+        <a id="btn" href="/console/{{.rid}}" class="easyui-linkbutton jh_btn"><span>Redis Console</span></a>
+        <a id="btn" href="#" class="easyui-linkbutton jh_btn"><span>Redis 慢日志</span></a>
+        <a id="btn" href="#" class="easyui-linkbutton jh_btn"><span>Redis 远程逻辑备份</span></a>
+        <a id="btn" href="/client/list/{{.rid}}" class="easyui-linkbutton jh_btn"><span>所有连接客户端</span></a>
+        <hr>
+    </div>
+
+    <div class="r_servers_div">
+          <span style="font-size: 18px;">>Redis服务器实时信息</span><br> <br>
+          <span id="used_memory_str" class="r_servers_span">已使用内存：{{.used_memory_str}}</span>
+          <span id="clinet_number" class="r_servers_span">客户端数量: {{.clinet_number}}</span>
+          <span id="cmder_number" class="r_servers_span">执行命令：{{.cmder_number}}</span>
+          <span id="run_time" class="r_servers_span">运行时长：{{.run_time}}</span>
+    </div>
+    
+    <div class="yy r_servers_echarts_div">
+        <a onclick="location.reload()" >(10s刷新一次)</a>
+        {{if and (eq .h "0") (eq .d "0")}}
+            <a href="/echarts/memory/{{.rid}}?h=0&d=0" style="color: red;">监控1小时内</a>
+        {{else}}
+            <a href="/echarts/memory/{{.rid}}?h=0&d=0" >监控1小时内</a>
+        {{end}}
+
+        {{if and (eq .h "12") (eq .d "0")}}
+            <a href="/echarts/memory/{{.rid}}?h=12&d=0" style="color: red;">监控12小时内</a>
+        {{else}}
+            <a href="/echarts/memory/{{.rid}}?h=12&d=0" >监控12小时内</a>
+        {{end}}
+
+        {{if and (eq .h "24") (eq .d "0")}}
+            <a href="/echarts/memory/{{.rid}}?h=24&d=0" style="color: red;">监控24小时内</a>
+        {{else}}
+            <a href="/echarts/memory/{{.rid}}?h=24&d=0" >监控24小时内</a>
+        {{end}}
+
+        {{if and (eq .d "3") (eq .h "0")}}
+            <a href="/echarts/memory/{{.rid}}?h=0&d=3" style="color: red;">监控3天内</a>
+        {{else}}
+            <a href="/echarts/memory/{{.rid}}?h=0&d=3" >监控3天内</a>
+        {{end}}
+
+        {{if and (eq .d "7") (eq .h "0")}}
+            <a href="/echarts/memory/{{.rid}}?h=0&d=7" style="color: red;">监控7天内</a>
+        {{else}}
+            <a href="/echarts/memory/{{.rid}}?h=0&d=7" >监控7天内</a>
+        {{end}}
+
+        <div id="main" class="r_servers_echarts"></div>  
+    </div>
+    
+    <div class="yy r_servers_table_div">
+        <table id="info" style="height:500px;"></table>
+    </div>  
+
+    <div class="r_db_info_div">
+        <hr>
+        <br>
+        <span style="font-size: 18px;">>Redis DB</span><br> <br>
+        <div id="db" class="easyui-accordion" style="width:100%;margin-bottom: 50px;">
+            {{range .dbs}}
+                <div title="DB{{.DBID}}" style="padding:10px;">
+                    <span>Key数量：{{.Keys}}</span><br>
+                    <span>过期的Key数量：{{.Expires}}</span><br>
+                    <span>Key的平均TTL：{{.AvgTTL}}</span><br>
+                </div>
+            {{end}}
+
+        </div>
+    </div>
+    
+</div>    
+    
+
+<script type="text/javascript">
+
+function infoTable(){
+    
+    var url = "/api/redis/auth/infos/{{.rid}}";
+    sendAjax_get(url,function(data){
+        console.log(data.data)
+
+        var table_data = data.data;
+
+        $('#info').datagrid({
+                //url:'datagrid_data.json',
+                columns:[[
+                    {field:'key',title:'服务器信息描述'},
+                    {field:'value',title:'值'},
+                ]],
+                data: table_data,
+                fitColumns: true,
+                pagination: false,
+                rownumbers: false,
+                singleSelect: true
+        });
+    });
+
+    
+}
+
+infoTable();
+
+// 初始化echarts实例
+var myChart = echarts.init(document.getElementById('main'));
+var time_list_data = {{.time_list}};
+var used_memory_data = {{.used_memory}};
+var used_memory_lua_data = {{.used_memory_lua}};
+var used_memory_peak_data = {{.used_memory_peak}};
+var used_memory_rss_data = {{.used_memory_rss}};
+      
+function addData(){
+  var url = "/api/redis/auth/memory/chart/{{.rid}}?h={{.h}}&d={{.d}}";
+    sendAjax_get(url,function(data){
+      
+    if (time_list_data.length >= 19 || 
+        used_memory_data.length >= 19 ||
+        used_memory_lua_data.length >= 19 ||
+        used_memory_peak_data.length >= 19 ||
+        used_memory_rss_data.length >= 19){
+
+          for(i=0;i<20;i++){
+              time_list_data.shift();
+              used_memory_data.shift();
+              used_memory_lua_data.shift();
+              used_memory_peak_data.shift();
+              used_memory_rss_data.shift();
+          }
+     }
+
+
+      time_list_data = data.data.time_list;
+      used_memory_data = data.data.used_memory;
+      used_memory_lua_data = data.data.used_memory_lua;
+      used_memory_peak_data = data.data.used_memory_peak;
+      used_memory_rss_data = data.data.used_memory_rss;
+
+      $("#used_memory_str").empty()
+      $("#used_memory_str").append("已使用内存："+data.data.used_memory_str)
+
+      $("#clinet_number").empty()
+      $("#clinet_number").append("客户端数量："+data.data.clinet_number)
+
+      $("#cmder_number").empty()
+      $("#cmder_number").append("执行命令："+data.data.cmder_number)
+
+      $("#run_time").empty()
+      $("#run_time").append("运行时长："+data.data.run_time)
+
+    });
+}
+      
+var option = {
+    "textStyle": {
+        "fontFamily": "Din-Light"
+    },
+    "color": ["#123dac", "#73e2e2", "#ff7e85", "#9b52ff", "#fac524", "#46caff", "#a1e867", "#10b2b2", "#ec87f7", "#f4905a", "#00baba", "#facf24", "#e89d67", "#23c6c6", "#fa8699", "#40b7fc", "#006d75", "#595959", "#f4764f", "#a640fc", "#fda23f", "#2d7ae4", "#5092ff", "#9351ed", "#8a89fe", "#df89e8", "#2797ff", "#6ad089", "#7c92e8 "],
+    "title": {
+        "text": "",
+        "left": "47%",
+        "textStyle": {
+            "fontSize": 24
+        }
+    },
+    "legend": {
+        "data": [{
+            "name": "Used Memory",
+            "icon": "path://M512 139.81262864a286.42534744 286.42534744 0 1 0 286.42534744 286.42534744 286.42534744 286.42534744 0 0 0-286.42534744-286.42534744z m0 477.3755789a190.95023144 190.95023144 0 1 1 190.95023144-190.95023146 190.95023144 190.95023144 0 0 1-190.95023144 190.95023146z"
+        }, {
+            "name": "Used Memory Rss",
+            "icon": "path://M512 139.81262864a286.42534744 286.42534744 0 1 0 286.42534744 286.42534744 286.42534744 286.42534744 0 0 0-286.42534744-286.42534744z m0 477.3755789a190.95023144 190.95023144 0 1 1 190.95023144-190.95023146 190.95023144 190.95023144 0 0 1-190.95023144 190.95023146z"
+        }, {
+            "name": "Used Memory Lua",
+            "icon": "path://M512 139.81262864a286.42534744 286.42534744 0 1 0 286.42534744 286.42534744 286.42534744 286.42534744 0 0 0-286.42534744-286.42534744z m0 477.3755789a190.95023144 190.95023144 0 1 1 190.95023144-190.95023146 190.95023144 190.95023144 0 0 1-190.95023144 190.95023146z"
+        }, {
+            "name": "Used Memory Peak",
+            "icon": "path://M512 139.81262864a286.42534744 286.42534744 0 1 0 286.42534744 286.42534744 286.42534744 286.42534744 0 0 0-286.42534744-286.42534744z m0 477.3755789a190.95023144 190.95023144 0 1 1 190.95023144-190.95023146 190.95023144 190.95023144 0 0 1-190.95023144 190.95023146z"
+        }],
+        "left": "left",
+        "selected": {
+            "Used Memory": true,
+            "Used Memory Rss": true,
+            "Used Memory Lua": true,
+            "Used Memory Peak": true
+        },
+        "itemWidth": 10,
+        "itemHeight": 10,
+        "itemGap": 10,
+        "textStyle": {
+            "color": "#898989",
+            "lineHeight": 15
+        },
+        "type": "scroll",
+    },
+    "tooltip": {
+        "backgroundColor": "#fff",
+        "trigger": "axis",
+        "axisPointer": {
+            "type": "none"
+        },
+        "textStyle": {
+            "color": "#565656",
+            "lineHeight": 28
+        },
+        "confine": true,
+        "padding": 12,
+        "extraCssText": "box-shadow: 0px 2px 8px 0px #cacaca;border-radius: 4px;opacity: 0.9;max-height: 100%;",
+        "formatter": {
+            "_custom": {
+                "type": "function",
+                "display": "<span>ƒ</span> (params)"
+            }
+        }
+    },
+    "grid": {
+        "left": 0,
+        "right": 0,
+        "top": 100,
+        "bottom": 100
+    },
+    "xAxis": {
+        "type": "category",
+        "boundaryGap": true,
+        "data": time_list_data,
+        "axisLabel": {
+            "color": "#a0a9bc",
+            //X轴标签 label 做了特殊处理，防止左右溢出
+           formatter: (value, index) => {
+              if (index === 0 || index === time_list_data.length - 1) {
+                return "";
+              }
+              return value;
+            }
+        },
+        "axisLine": {
+            "show": false
+        },
+        "axisTick": {
+            "show": false
+        }
+    },
+    "yAxis": {
+        "name": "",
+        "nameTextStyle": {
+            "color": "gray"
+        },
+        "type": "value",
+        "axisLabel": {
+            "color": "#a0a9bc",
+            "inside": true,
+            "margin": 0,
+            "verticalAlign": "bottom"
+        },
+        "splitLine": {
+            "lineStyle": {
+                "type": "dashed"
+            }
+        },
+        "minInterval": 1,
+        "axisLine": {
+            "show": false
+        },
+        "axisTick": {
+            "show": false
+        }
+    },
+    "series": [{
+        "name": "Used Memory",
+        "data": used_memory_data,
+        "type": "line",
+        "smooth": true,
+        "smoothMonotone": "x",
+        "cursor": "pointer",
+        "showSymbol": false,
+        "lineStyle": {
+            "shadowColor": "rgba(18,61,172,0.5)",
+            "shadowBlur": 10
+        }
+    }, {
+        "name": "Used Memory Rss",
+        "data": used_memory_rss_data,
+        "type": "line",
+        "smooth": true,
+        "smoothMonotone": "x",
+        "cursor": "pointer",
+        "showSymbol": false,
+        "lineStyle": {
+            "shadowColor": "rgba(115,226,226,0.5)",
+            "shadowBlur": 10
+        }
+    }, {
+        "name": "Used Memory Lua",
+        "data": used_memory_lua_data,
+        "type": "line",
+        "smooth": true,
+        "smoothMonotone": "x",
+        "cursor": "pointer",
+        "showSymbol": false,
+        "lineStyle": {
+            "shadowColor": "rgba(255,126,133,0.5)",
+            "shadowBlur": 10
+        }
+    }, {
+        "name": "Used Memory Peak",
+        "data": used_memory_peak_data,
+        "type": "line",
+        "smooth": true,
+        "smoothMonotone": "x",
+        "cursor": "pointer",
+        "showSymbol": false,
+        "lineStyle": {
+            "shadowColor": "rgba(18,61,172,0.5)",
+            "shadowBlur": 10
+        }
+    },]
+}
+
+// 使用刚指定的配置项和数据显示图表。
+myChart.setOption(option);
+setInterval(function () {
+    console.log("time_list_data = ",time_list_data)
+    addData();
+    myChart.setOption({
+      xAxis: {
+          data: time_list_data
+        },
+      series: [{
+          name:'Used Memory',
+          data: used_memory_data
+        },{
+          name:'Used Memory Rss',
+          data: used_memory_rss_data
+        },
+        {
+          name:'Used Memory Lua',
+          data: used_memory_lua_data
+        },
+        {
+          name:'Used Memory Peak',
+          data: used_memory_peak_data
+        }
+        ]});
+        }, 10000);
+    </script>
+</body>
+
+</html>

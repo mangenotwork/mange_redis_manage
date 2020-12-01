@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="/static/echarts-4.8.0/dist/echarts.js"></script>
+</head>
+<body>
+
+	<a onclick="location.reload()">刷新</a>
+
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+    const colorList = ["#2d82ff", '#2fca95']
+const xData = ['北京', '上海', '广州', '深圳', '香港', '澳门', '台湾']
+option = {
+    backgroundColor: '#fff',
+    title: {
+        text: '简单折现图',
+        textStyle: {
+            fontSize: 12,
+            fontWeight: 400
+        },
+        left: 'center',
+        top: '5%'
+    },
+    legend: {
+        icon: 'circle',
+        top: '5%',
+        right: '5%',
+        itemWidth: 6,
+        itemGap: 20,
+        textStyle: {
+            color: '#666'
+        }
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            label: {
+                show: true,
+                backgroundColor: '#fff',
+                color: '#556677',
+                borderColor: 'rgba(0,0,0,0)',
+                shadowColor: 'rgba(0,0,0,0)',
+                shadowOffsetY: 0
+            },
+            lineStyle: {
+                width: 0
+            }
+        },
+        backgroundColor: '#fff',
+        textStyle: {
+            color: '#5c6c7c'
+        },
+        padding: [10, 10],
+        extraCssText: 'box-shadow: 1px 0 2px 0 rgba(163,163,163,0.5)'
+    },
+    grid: {
+        top: '15%'
+    },
+    xAxis: [{
+        type: 'category',
+        data: xData,
+        axisLine: {
+            lineStyle: {
+                color: '#DCE2E8'
+            }
+        },
+        axisTick: {
+            show: false
+        },
+        axisLabel: {
+            interval: 0,
+            textStyle: {
+                color: '#666'
+            },
+            margin: 15
+        },
+        axisPointer: {
+            label: {
+                padding: [11, 5, 7],
+                
+                    
+                
+            }
+        },
+        boundaryGap: false
+    }],
+    yAxis: [{
+        type: 'value',
+        axisTick: {
+            show: false
+        },
+        axisLine: {
+            show: true,
+            lineStyle: {
+                color: '#DCE2E8'
+            }
+        },
+        axisLabel: {
+            textStyle: {
+                color: '#556677'
+            }
+        },
+        splitLine: {
+            show: false
+        }
+    }],
+    series: [{
+        name: 'Adidas',
+        type: 'line',
+        data: [10, 20, 10, 20, 15, 9, 20],
+        symbolSize: 1,
+        symbol: 'circle',
+        smooth: true,
+        yAxisIndex: 0,
+        showSymbol: false,
+        lineStyle: {
+            width: 4,
+            color:'#2d82ff',
+            shadowColor: 'rgba(45,130,255, 0.3)',
+            shadowBlur: 8,
+            shadowOffsetY: 10
+        },
+        areaStyle: {
+            color:'rgba(47,202,2149, 0.3)',//背景颜色
+        },
+        itemStyle: {
+            normal: {
+                color: colorList[0],
+                borderColor: colorList[0]
+            }
+        }
+    }, {
+        name: 'Nike',
+        type: 'line',
+        data: [5, 12, 11, 14, 25, 16, 10],
+        symbolSize: 1,
+        symbol: 'circle',
+        smooth: true,
+        yAxisIndex: 0,
+        showSymbol: false,
+        lineStyle: {
+            width:4,
+             color:'#2fca95',
+            shadowColor: 'rgba(47,202,2149, 0.3)',
+            shadowBlur: 8,
+            shadowOffsetY: 10
+        },
+        areaStyle: {
+            color:'rgba(47,202,2149, 0.3)',
+        },
+        itemStyle: {
+            normal: {
+                color: colorList[1],
+                borderColor: colorList[1]
+            }
+        }
+    }]
+};
+            
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="keywords" content="jquery,ui,easy,easyui,web">
+	<meta name="description" content="easyui help you build your web page easily!">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+	<script type="text/javascript" src="/static/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/easyui/jquery.easyui.min.js"></script>
+	<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax_fun.js"></script>
+
+    <style type="text/css">
+    	a {cursor: pointer;}
+    	.return_pg {color:#000;text-decoration:none;}
+       	.return_pg span {font-size: 21px;}
+     	.reload_pg {margin-left: 2px;color:#000;}
+      	.reload_pg span {font-size: 21px;}
+    </style>
+
+</head>
+<body>
+	
+	<div style="padding: 25px;">
+
+		<a href="javascript:history.go(-1)" class="return_pg"><span> ⬅ </span></a>
+		<span style="font-size: 18px;margin-left: 10px;"> Redis当前所有连接(操作请双击客户端)</span>
+		<a onclick="location.reload()" class="reload_pg"><span> ↺ </span></a>
+		<br>
+		<hr>
+	
+		<table id="info" style="width: 100%;height:680px;"></table>
+	</div>
+
+	<div id="doing" style="display: none;padding: 35px;font-size: 24px;">
+		客户端:<span id="client"></span><br><br>
+		<a id="btn" href="#" class="easyui-linkbutton" style="background: red;"><span style="color: #fff;font-size: 21px;">关闭该客户端对Redis服务器的连接</span></a>
+	</div>
+
+</body>
+
+<script type="text/javascript">
+
+function infoTable(){
+    
+    var url = "/api/redis/auth/client/list/{{.rid}}";
+    sendAjax_get(url,function(data){
+        console.log(data.data)
+
+        var table_data = data.data;
+
+        $('#info').datagrid({
+                columns:[[
+					{field:'id',title:'连接ID'},
+					{field:'addr',title:'客户端'},
+					{field:'fd',title:'套接字',align:'right'},
+					{field:'name',title:'设置的连接名',align:'right'},
+					{field:'age',title:'以秒计算的已连接时长',align:'right'},
+					{field:'idle',title:'以秒计算的空闲时长',align:'right'},
+					{field:'flags',title:'客户端 flag',align:'right'},
+					{field:'db',title:'该客户端正在使用的数据库 ID',align:'right'},
+					{field:'sub',title:'已订阅频道的数量',align:'right'},
+					{field:'psub',title:'已订阅模式的数量',align:'right'},
+					{field:'multi',title:'在事务中被执行的命令数量',align:'right'},
+					{field:'qbuf',title:'查询缓存的长度（ 0 表示没有查询在等待）',align:'right'},
+					{field:'qbuf_free',title:'查询缓存的剩余空间（ 0 表示没有剩余空间）',align:'right'},
+					{field:'obl',title:'输出缓存的长度',align:'right'},
+					{field:'oll',title:'输出列表的长度',align:'right'},
+					{field:'omem',title:'输出缓存的内存占用量',align:'right'},
+					{field:'events',title:'文件描述符事件',align:'right'},
+					{field:'cmd',title:'最近一次执行的命令',align:'right'},
+			    ]],
+                data: table_data,
+                fitColumns: true,
+                pagination: true,
+                rownumbers: true,
+                singleSelect: true,
+                onDblClickCell: function(index,field,value){
+                	//双击操作
+                	//console.log(index,field,value)
+
+                	if (field != "addr"){
+                		alert("请双击客户端进行操作!")
+                		return
+                	}
+
+                	$("#client").empty();
+                	$("#client").append(value);
+                	
+
+                	$('#doing').window({
+						width:600,
+						height:350,
+						modal:true,
+						collapsible:false,
+						title: "客户端操作",
+						minimizable:false,
+						maximizable:false
+					});
+				}
+        });
+    });
+}
+
+infoTable()
+
+</script>
+
+</html>

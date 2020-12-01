@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="keywords" content="jquery,ui,easy,easyui,web">
+	<meta name="description" content="easyui help you build your web page easily!">
+	<title>{{.title}}</title>
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/easyui/themes/icon.css">
+	<script type="text/javascript" src="static/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="static/easyui/jquery.easyui.min.js"></script>
+	<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="static/js/ajax_fun.js"></script>
+
+</head>
+<body>
+	
+	<div style="text-align: center;width: 100%">
+		<h1>欢迎使用mange redis 管理工具</h1>
+		<h1>安装向导</h1>
+	      <h4>感谢 :<a href="{{.thank_url}}">{{.thank}}</a></h4>
+	      <h4>作者 :{{.author}}</h4>
+	      <h4><a href="/help">帮助文档</a><h4>
+	      <h4><a href="https://www.github.com/mangenotwork/mange_redis_manage">项目地址</a><h4>
+	</div>
+	<div style="text-align: center;width: 100%;margin-top: 50px;background: #bebec5;">
+		<h2>设置超级管理员</h2>
+		账号:<input id="name" class="easyui-textbox" style="width:300px">
+		<br>
+		密码:<input id="password" class="easyui-textbox" style="width:300px">
+		<br>
+		<h2>系统基础设置</h2>
+		JWT盐: <input id="secret" class="easyui-textbox" style="width:300px">
+		<br>
+		<a onclick="Install()"><h2>确认安装</h2></a>
+
+	</div>
+	<script type="text/javascript">
+		function Install(){
+			var admin_name = $("#name").val();
+			var admin_password = $("#password").val();
+			var secret = $("#secret").val();
+			window.location.href="/install/run?admin_name="+admin_name+"&admin_password="+admin_password+"&secret="+secret 
+		}
+	</script>
+</body>
+</html>
