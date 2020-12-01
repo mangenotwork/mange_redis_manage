@@ -1,0 +1,27 @@
+node_modules/
+.idea/
+test/
+.vscode/
+dist/
+build/
+vendor/
+logs/
+.sass-cache/
+redis-cli/
+report/
+log/
+db/
+tests/
+
+# macos/linux bin
+
+
+# 文件
+*.exe
+*.exe~
+*.log
+*.sum
+
+# macos
+.DS_Store
+
