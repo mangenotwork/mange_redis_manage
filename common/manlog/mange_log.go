@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"log"
 	"runtime"
-
-	logs "github.com/astaxie/beego/logs"
 )
 
 func init() {
@@ -74,7 +72,7 @@ func Info(data ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fmt.Print("\n")
 	//log.Printf("%s|%s|\033[1;32;1m%v\033[0m", InfoTpl, filetplinfo(file, line), data)
-	logs.Info("%s|%s|\033[1;32;1m%v\033[0m", InfoTpl, filetplinfo(file, line), data)
+	log.Println("%s|%s|\033[1;32;1m%v\033[0m", InfoTpl, filetplinfo(file, line), data)
 }
 
 // 字背景颜色范围:40----49

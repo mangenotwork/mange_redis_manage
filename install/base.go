@@ -12,7 +12,6 @@ import (
 	"github.com/mangenotwork/mange_redis_manage/common/cache"
 	"github.com/mangenotwork/mange_redis_manage/common/manlog"
 	"github.com/mangenotwork/mange_redis_manage/common/sqlitedb"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 //检查安装中间件
@@ -76,8 +75,8 @@ func InstallPG(c *gin.Context) {
 	c.HTML(http.StatusOK, "install_index.html", gin.H{
 		"title":     "ManGe Redis管理工具v0.1",
 		"welcome":   "欢迎使用ManGe Redis管理工具v0.1",
-		"thank":     "感谢圆梦时刻提供技术支持!",
-		"thank_url": "https://www.ymzy.cn",
+		"thank":     "感谢Mange提供技术支持!",
+		"thank_url": "加群：123456",
 		"author":    "ManGe (2912882908@qq.com)",
 	})
 }

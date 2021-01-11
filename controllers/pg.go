@@ -57,10 +57,10 @@ func (this *ClientPG) Index(c *gin.Context) {
 
 	this.Context.HTML(http.StatusOK, "home.html", gin.H{
 		"is_show":   isShow,
-		"title":     "Ymzy Redis 工具v0.1",
-		"welcome":   "Ymzy Redis 工具v0.1",
-		"thank":     "感谢圆梦时刻提供技术支持!",
-		"thank_url": "https://www.ymzy.cn",
+		"title":     "ManGe Redis 管理工具v0.1",
+		"welcome":   "ManGe Redis 管理工具v0.1",
+		"thank":     "感谢Mange提供技术支持!",
+		"thank_url": "mange",
 		"author":    "ManGe (2912882908@qq.com)",
 		"isLogin":   isLogin,
 		"username":  username,
