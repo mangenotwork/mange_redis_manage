@@ -352,12 +352,16 @@ OneInput.prototype.reset2 = function(){
 	this.resetskeyinput();
 }
 OneInput.prototype.post = function(result,keytype){
-	
+	console.log("result = ");
+	console.log(result);
+
 	var keyname = $("#"+this.names+"_key").val();
 	var ttl = $("#"+this.names+"_ttl").val();
 
 	if (result.length === 0){
-		alert("Value不能为空");
+		//alert("Value不能为空");
+		console.log("Value不能为空");
+		console.log(result);
 		return
 	}
 
@@ -382,7 +386,8 @@ OneInput.prototype.post = function(result,keytype){
 
 	console.log(param);
 
-	var url = "/api/redis/auth/keys/create/{{.rid}}";
+	var url = "/api/redis/auth/keys/create/"+rid;
+	console.log(url);
 	sendAjax_post(url,param,function(data){
 	    console.log(data);
 	    if (data.code == 1){
@@ -397,11 +402,12 @@ OneInput.prototype.post = function(result,keytype){
 }
 OneInput.prototype.subimt2 = function(keytype){
 	var result = new Array();
-	$('input[class="'+this.names+'_input"]').each(function(j,k){
+	$('.'+this.names+'_input').each(function(j,k){
+		console.log("j,k = " + j + k);
 		if (j%2 === 0){
-			key = k.value
+			key = k.value;
 		}else{
-			val = k.value
+			val = k.value;
 			if (key != "" && val != ""){
 				var map=new Map();
 				map[key]=val;
@@ -409,15 +415,17 @@ OneInput.prototype.subimt2 = function(keytype){
 			}
 		}
 	});
+	console.log("result = "+ result);
 	this.post(result,keytype);
 }
 OneInput.prototype.subimt = function(keytype){
 	var result = new Array();
-	$('input[class="'+this.names+'_input"]').each(function(j,k){
+	$('.'+this.names+'_input').each(function(j,k){
 		if (k.value != ""){
-			result.push(k.value)
+			result.push(k.value);
 		}
 	});
+	console.log("result = "+ result);
 	this.post(result,keytype);
 }
 OneInput.prototype.stringsubimt = function(keytype){

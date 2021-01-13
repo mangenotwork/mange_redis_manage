@@ -584,6 +584,8 @@ func (this *RedisConn) GetRedisDBList(user *structs.UserParameter, redisId int64
 	datas := manredis.GetRedisServersInfos(rc, rcid)
 	manlog.Debug(datas.Keyspace)
 
+	ismap := make(map[int64]bool, 0)
+
 	for _, v := range datas.Keyspace {
 		dblist = append(dblist, &structs.RedisServersDBInfo{
 			DBID:    v.DBID,
@@ -591,6 +593,18 @@ func (this *RedisConn) GetRedisDBList(user *structs.UserParameter, redisId int64
 			Expires: v.Expires,
 			AvgTTL:  v.AvgTTL,
 		})
+		ismap[v.DBID] = true
+	}
+
+	dbnum := manredis.GetDatabasesCount(rc)
+	manlog.Debug("dbnum = ", dbnum)
+
+	for i := 0; i <= dbnum; i++ {
+		if !ismap[int64(i)] {
+			dblist = append(dblist, &structs.RedisServersDBInfo{
+				DBID: int64(i),
+			})
+		}
 	}
 
 	return

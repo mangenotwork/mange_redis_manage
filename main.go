@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mangenotwork/mange_redis_manage/install"
 	"github.com/mangenotwork/mange_redis_manage/routers"
-	"github.com/mangenotwork/mange_redis_manage/service"
+	//"github.com/mangenotwork/mange_redis_manage/service"
 )
 
 func init() {
@@ -18,7 +18,7 @@ func init() {
 	//如果已经安装做如下启动
 	if is_install {
 		//开启队列生成者
-		go service.QueueProducerStart()
+		//go service.QueueProducerStart()
 		//开启队列消费则
 		//go service.ExpenserStrat()
 		//开启定时任务

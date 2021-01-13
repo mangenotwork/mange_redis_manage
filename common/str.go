@@ -23,6 +23,14 @@ func Str2Int64(str string) int64 {
 	return i
 }
 
+func Str2Int(str string) int {
+	i, err := strconv.Atoi(str)
+	if err != nil {
+		return 0
+	}
+	return i
+}
+
 func Str2Float64(str string) float64 {
 	i, err := strconv.ParseFloat(str, 64)
 	if err != nil {

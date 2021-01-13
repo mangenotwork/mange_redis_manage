@@ -147,6 +147,8 @@ func (this *ClientPG) RedisOperation(c *gin.Context) {
 		initdb = dblist[0]
 	}
 
+	manlog.Debug("dblist = ", dblist)
+
 	this.Context.HTML(http.StatusOK, "db_doing.html", gin.H{
 		"rid":    rid,
 		"dblist": dblist,
