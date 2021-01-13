@@ -28,7 +28,7 @@
 
   {{if eq .is_show 1}}
 	<div id="wellcom" class="easyui-window wellcom_div" title="My Window"
-	    data-options="modal:true,collapsible:false,title: 'Ymzy Redis Tool 欢迎页',minimizable:false,maximizable:false,closable:false">
+	    data-options="modal:true,collapsible:false,title: 'ManGe Redis Tool 欢迎页',minimizable:false,maximizable:false,closable:false">
 	    <h3>{{.welcome}}</h3>
       <h4>请登录获得及佳体验，<br>如果是没有子账号请联系管理员添加你的账号，<br>如果你是管理员请定期更新你的密码。</h4>
       <h3 ><a onclick="userlogin()" style="color: red;">前往登录>>></a>
@@ -65,7 +65,7 @@
 		<!-- file menu -->
 		<div id="file" class="easyui-menu" style="width:120px;">
 		    <div>打开连接</div>
-		    <div>新建连接</div>
+		    <div><a onclick="newconn()">新建连接</a></div>
 		    <div>导入连接</div>
 		    <div>导出连接</div>
 		    <div>
@@ -137,7 +137,7 @@
     	
     	<!-- <div id="tt" class="easyui-tabs" > -->
 		    <div title="init" data-options="split:true" style="padding:10px;display:none;">
-				<h2>欢迎使用Ymzy Redis 工具</h2>
+				<h2>欢迎使用ManGe Redis 工具</h2>
 				 <h4>感谢 :<a href="{{.thank_url}}">{{.thank}}</a></h4>
 			      <h4>作者 :{{.author}}</h4>
 			      <h4><a href="/help">帮助文档</a><h4>
