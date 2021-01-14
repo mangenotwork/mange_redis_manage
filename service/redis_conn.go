@@ -58,6 +58,8 @@ func (this *RedisConn) conn(data *structs.RedisConnData) (rc redis.Conn, connErr
 		isSSH = true
 	}
 
+	manlog.Debug("ssh = ", data.SSHHost, data.SSHPassword, data.SSHUser)
+
 	if isSSH && data.SSHUser == "" {
 		data.SSHUser = "root"
 	}

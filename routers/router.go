@@ -63,6 +63,9 @@ func Routers() *gin.Engine {
 		API_Redis_Auth.GET("/keys/move/toredis/:redisId", new(controllers.RedisAPI).RedisKeyMove2Redis) //将key转移到制定redis TODO
 		API_Redis_Auth.POST("/keys/create/:redisId", new(controllers.RedisAPI).RedisCreateNewKey)       //新建key
 		API_Redis_Auth.POST("/console", new(controllers.RedisAPI).RedisConsole)                         //redis 命令终端
+		//导出指定连接
+		//导出所有连接
+		//导入连接
 	}
 
 	API_Redis_Allow := Router.Group("/api/redis/allow")
@@ -70,6 +73,7 @@ func Routers() *gin.Engine {
 		API_Redis_Allow.GET("/say", new(controllers.RedisAPI).Say)
 		API_Redis_Allow.POST("/say", new(controllers.RedisAPI).Say)
 		API_Redis_Allow.POST("/conn/test", new(controllers.RedisAPI).ConnRedisT)
+		API_Redis_Allow.GET("/getfile", new(controllers.RedisAPI).GetFile) //下载文件测试
 	}
 
 	//用户接口

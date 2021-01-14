@@ -5,7 +5,9 @@
 package controllers
 
 import (
+	"fmt"
 	_ "net/http"
+	"os"
 	_ "time"
 
 	"github.com/gin-gonic/gin"
@@ -98,7 +100,7 @@ func (this *RedisAPI) ConnRedisT(c *gin.Context) {
 	if err := this.GetPostArgs(&redis_conn_data); err != nil {
 		return
 	}
-
+	manlog.Debug("redis_conn_data = ", redis_conn_data)
 	rcServers := service.RedisConnServiceFunc()
 	callback := rcServers.Detection(redis_conn_data)
 
@@ -107,6 +109,26 @@ func (this *RedisAPI) ConnRedisT(c *gin.Context) {
 
 	this.APIOutPut(0, "", callback)
 	return
+}
+
+//下载文件测试
+func (this *RedisAPI) GetFile(c *gin.Context) {
+	c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "test.txt"))
+	c.Writer.Header().Add("Content-Type", "application/octet-stream")
+	fileName := "./test.txt"
+	f, err := os.Create(fileName)
+
+	if err != nil {
+		manlog.Debug(err.Error())
+	} else {
+		_, err = f.Write([]byte("要写入的文本内容 asdasdsads"))
+		manlog.Debug(err)
+	}
+	f.Close()
+
+	defer os.Remove(fileName)
+	c.File(fileName)
+
 }
 
 func (this *RedisAPI) ConnList(c *gin.Context) {
