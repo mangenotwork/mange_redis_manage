@@ -60,8 +60,8 @@ func (this *ClientPG) Index(c *gin.Context) {
 		"title":     "ManGe Redis 管理工具v0.1",
 		"welcome":   "ManGe Redis 管理工具v0.1",
 		"thank":     "感谢Mange提供技术支持!",
-		"thank_url": "mange",
-		"author":    "ManGe (2912882908@qq.com)",
+		"thank_url": "https://github.com/mangenotwork",
+		"author":    "ManGe (加QQ群获取最新源码：829277568)",
 		"isLogin":   isLogin,
 		"username":  username,
 	})

@@ -76,8 +76,8 @@ func InstallPG(c *gin.Context) {
 		"title":     "ManGe Redis管理工具v0.1",
 		"welcome":   "欢迎使用ManGe Redis管理工具v0.1",
 		"thank":     "感谢Mange提供技术支持!",
-		"thank_url": "加群：123456",
-		"author":    "ManGe (2912882908@qq.com)",
+		"thank_url": "https://github.com/mangenotwork",
+		"author":    "ManGe (加QQ群获取最新源码：829277568)",
 	})
 }
 
